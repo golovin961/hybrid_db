@@ -1,2 +1,2 @@
-# hybrid_db
-spark + tinkerpop + elastic searsh + kibana + kafka
+# Hybrid Database
+![Scheme](images/hdb.png)
