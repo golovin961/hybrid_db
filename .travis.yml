@@ -20,7 +20,7 @@ script:
   - chmod +x ./mvnw &&
     ./mvnw clean package
 after_success:
-  - sh .travis/deploy_dockerhub.sh
+  - sh ./deploy_dockerhub.sh
 #-job: #&test-job
 #  stage: test
 #  script:
