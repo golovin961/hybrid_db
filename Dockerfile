@@ -9,4 +9,4 @@ WORKDIR /opt/app/
 
 EXPOSE $PORT
 
-CMD ["sh", "-c", "find -type f -name '*.war' | xargs java -jar -Dserver.port=${PORT}"]
+CMD ["sh", "./mvnw spring-boot:run"]
