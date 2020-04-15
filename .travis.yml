@@ -16,7 +16,7 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
   - docker pull openjdk:8-jdk-alpine
   - chmod +x ./mvnw &&
-    clean package
+    ./mvnw clean package
 #-job: #&test-job
 #  stage: test
 #  script:
