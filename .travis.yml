@@ -11,16 +11,20 @@ jdk:
 services:
   - docker
 
+
 before_install:
   - mvn clean
   - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
   - docker pull openjdk:8-jdk-alpine
-
 script:
   - chmod +x ./mvnw &&
     ./mvnw clean package
 after_success:
-  - sh ./deploy_dockerhub.sh
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t hybrid_db .
+  - docker images
+  - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db
+  - docker push $DOCKER_USERNAME/hybrid_db
 #-job: #&test-job
 #  stage: test
 #  script:
