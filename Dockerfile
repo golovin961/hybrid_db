@@ -9,7 +9,7 @@ COPY ${WAR_FILE} app.war
 ENV PORT 8080
 EXPOSE $PORT
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app.war"]
 
 ENV PORT 8080
 #ENV ENVIRONMENT_NAME=""
