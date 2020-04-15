@@ -15,8 +15,12 @@ before_install:
   - mvn clean
   - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
   - docker pull openjdk:8-jdk-alpine
+
+script:
   - chmod +x ./mvnw &&
     ./mvnw clean package
+after_success:
+  - sh .travis/deploy_dockerhub.sh
 #-job: #&test-job
 #  stage: test
 #  script:
