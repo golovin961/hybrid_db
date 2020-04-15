@@ -5,7 +5,7 @@ ENV PORT 8080
 
 ADD ./target/*.war /opt/app/
 ADD mvnw /opt/app
-RUN chmod +x /opt/appmvnw
+RUN chmod +x /opt/app/mvnw
 
 WORKDIR /opt/app/
 
