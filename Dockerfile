@@ -1,17 +1,13 @@
-FROM openjdk:8-jdk-alpine
-
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
+FROM tomcat:latest
 
 ARG WAR_FILE=target/*.war
-COPY ${WAR_FILE} app.war
+ADD ${WAR_FILE} /usr/local/tomcat/webapps/
 
 ENV PORT 8080
 EXPOSE $PORT
 
-ENTRYPOINT ["java","-jar","/app.war"]
+CMD ["catalina.sh", "run"]
 
-ENV PORT 8080
 #ENV ENVIRONMENT_NAME=""
 
 #ADD ./target/*.war /opt/app/
