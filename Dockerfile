@@ -1,9 +1,9 @@
 FROM openjdk:8-jdk-alpine
 
-ENV PORT 5000
+ENV PORT 8080
 #ENV ENVIRONMENT_NAME=""
 
-COPY ./target/*.jar /opt/app/
+ADD ./target/*.war /opt/app/
 
 WORKDIR /opt/app/
 
