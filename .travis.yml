@@ -1,6 +1,39 @@
 language: java
 
 stages:
-  - build
+  - build-maven-project
   - test
-  - run
+  - build-and-push-docker-registry
+  #- deploy
+
+
+test-job: #&test-job
+  stage: test
+  script:
+    - echo 'run any test in "test" stage if you need'
+
+
+build-maven-project-job: #&build-maven-project-job
+  image: openjdk:8-jdk-alpine
+  stage: build-maven-project
+  script:
+    - chmod +x ./mvnw &&
+      clean package
+  artifacts:
+    paths:
+      - target/*.war
+    expire_in: 30 minutes
+
+
+build-job: #&build-job
+  image: docker:stable
+  stage: build-and-push-docker-registry
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+    - echo "$GITHUB_REPOSITORY"
+    - echo "$GITHUB_REF"
+  script:
+    - echo "build docker file and push them to docker registry"
+    - docker build -t $GITHUB_REPOSITORY:$GITHUB_REF-latest .
+    - docker push $GITHUB_REPOSITORY:$GITHUB_REF-latest
+    - docker logout
