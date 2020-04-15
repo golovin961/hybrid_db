@@ -23,8 +23,8 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t hybrid_db .
   - docker images
-  - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db
-  - docker push $DOCKER_USERNAME/hybrid_db
+  - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TAG
+  - docker push $DOCKER_USERNAME/hybrid_db:$TAG
 #-job: #&test-job
 #  stage: test
 #  script:
