@@ -1,12 +1,14 @@
-FROM openjdk:8-jdk-alpine
+FROM tomcat:latest
+
+ARG WAR_FILE=target/*.war
+ADD ${WAR_FILE} /usr/local/tomcat/webapps/
 
 ENV PORT 8080
-#ENV ENVIRONMENT_NAME=""
-
-ADD ./target/*.war /opt/app/
-
-WORKDIR /opt/app/
-
 EXPOSE $PORT
 
-CMD ["sh", "-c", "find -type f -name '*.war' | xargs java -jar -Dserver.port=${PORT}"]
+CMD ["catalina.sh", "run"]
+
+#ENV ENVIRONMENT_NAME=""
+
+#ADD ./target/*.war /opt/app/
+#WORKDIR /opt/app/
