@@ -1,57 +1,50 @@
 language: java
 
-stages:
-  - build-maven-project
-  - test
-  - build-and-push-docker-registry
-  #- deploy
-
 jdk:
   - openjdk8
 services:
   - docker
 
+stages:
+  - build-maven-project
+  - test
+  - name: build-and-push-docker-registry
+    if: branch IN (staging, production)
+  - name: build-and-push-heroku-registry
+    if: branch IN (staging, production)
+  - name: deploy
+    if: branch IN (staging, production)
 
 before_install:
-  - mvn clean
   - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
   - docker pull openjdk:8-jdk-alpine
-script:
-  - chmod +x ./mvnw &&
-    ./mvnw clean package
-after_success:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t hybrid_db .
-  - docker images
-  - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-  - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-#-job: #&test-job
-#  stage: test
-#  script:
-#    - echo 'run any test in "test" stage if you need'
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 
-
-#build-maven-project-job: #&build-maven-project-job
-#  image: openjdk:8-jdk-alpine
-#  stage: build-maven-project
-#  script:
-#    - chmod +x ./mvnw &&
-#      clean package
-#  artifacts:
-#    paths:
-#      - target/*.war
-#    expire_in: 30 minutes
-
-
-#build-job: #&build-job
-#  image: docker:stable
-#  stage: build-and-push-docker-registry
-#  before_script:
-#    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
-#    - echo "$GITHUB_REPOSITORY"
-#    - echo "$GITHUB_REF"
-#  script:
-#    - echo "build docker file and push them to docker registry"
-#    - docker build -t $GITHUB_REPOSITORY:$GITHUB_REF-latest .
-#    - docker push $GITHUB_REPOSITORY:$GITHUB_REF-latest
-#    - docker logout
+jobs:
+  include:
+  - stage: build-maven-project
+    script:
+    - chmod +x ./mvnw &&
+      ./mvnw clean package
+  - stage: test
+    script:
+    - echo "run any test in staging stage if you need"
+  - stage: build-and-push-docker-registry
+    script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker build -t hybrid_db .
+    - docker images
+    - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
+    - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
+  - stage: build-and-push-heroku-registry
+    script:
+    - docker images
+    - docker tag hybrid_db registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
+    - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
+  - stage: deploy
+    #script: heroku container:release web --app $HEROKU_APP_NAME-staging
+    deploy:
+      provider: heroku
+      app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
+      api_key: $HEROKU_AUTH_TOKEN
