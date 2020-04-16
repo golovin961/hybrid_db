@@ -29,7 +29,7 @@ jobs:
     script:
       - docker build -t hybrid_db .
       - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-      - docker tag hybrid_db registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
+      - docker tag hybrid_db registry.heroku.com/$HEROKU_APP_NAME-$TRAVIS_BRANCH/web
       - docker images
     after_script:
       - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
