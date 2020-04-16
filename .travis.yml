@@ -38,9 +38,9 @@ jobs:
       - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
       - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
       - heroku container:release web --app $HEROKU_APP_NAME-$TRAVIS_BRANCH
-      on:
-        all_branches: true
-        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(staging|production)$
     #deploy:
     #  provider: heroku
     #  app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
