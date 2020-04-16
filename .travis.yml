@@ -44,7 +44,8 @@ jobs:
     deploy:
       provider: heroku
       app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
-      api_key: $HEROKU_AUTH_TOKEN
+      api_key:
+        secure: $HEROKU_API_KEY
       on:
         all_branches: true
         condition: $TRAVIS_BRANCH =~ ^(staging|production)$
