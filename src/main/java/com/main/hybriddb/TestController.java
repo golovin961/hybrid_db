@@ -14,6 +14,7 @@ public class TestController {
 
     @GetMapping("/test")
     public Test test(@RequestParam(value = "name", defaultValue = "World") String name) {
+
         return new Test(counter.incrementAndGet(), String.format(template, name));
     }
 }
