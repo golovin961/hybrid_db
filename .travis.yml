@@ -33,8 +33,8 @@ jobs:
       - docker images
     after_script:
       - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-      - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
-      - heroku container:release web-$TRAVIS_BRANCH --app $HEROKU_APP_NAME-$TRAVIS_BRANCH
+      - docker push registry.heroku.com/$HEROKU_APP_NAME-$TRAVIS_BRANCH/web
+      - heroku container:release web --app $HEROKU_APP_NAME-$TRAVIS_BRANCH
     on:
       all_branches: true
       condition: $TRAVIS_BRANCH =~ ^(staging|production)$
