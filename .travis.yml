@@ -8,40 +8,37 @@ services:
 stages:
   - build-maven-project
   - test
-  - name: build-and-push-docker-registry
-    if: branch IN (staging, production)
-  - name: build-and-push-heroku-registry
+  - name: build-and-push-docker-and-heroku-registry
     if: branch IN (staging, production)
   - name: deploy
     if: branch IN (staging, production)
 
-before_install:
-  - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
-  - docker pull openjdk:8-jdk-alpine
-  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
-  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 
 jobs:
   include:
   - stage: build-maven-project
+    before_script:
+      - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
+      - docker pull openjdk:8-jdk-alpine
     script:
     - chmod +x ./mvnw &&
       ./mvnw clean package
   - stage: test
     script:
     - echo "run any test in staging stage if you need"
-  - stage: build-and-push-docker-registry
+  - stage: build-and-push-docker-and-heroku-registry
+    before_script:
+      - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
     script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker build -t hybrid_db .
-    - docker images
-    - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-    - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
-  - stage: build-and-push-heroku-registry
-    script:
-    - docker images
-    - docker tag hybrid_db registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
-    - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
+      - docker build -t hybrid_db .
+      - docker tag hybrid_db $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
+      - docker tag hybrid_db registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
+      - docker images
+    after_script:
+      - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
+      - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
   - stage: deploy
     #script: heroku container:release web --app $HEROKU_APP_NAME-staging
     deploy:
