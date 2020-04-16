@@ -1,20 +1,17 @@
-language: java
-
 services:
   - docker
 
 stages:
   - build-maven-project
   - test
-  - name: build-and-push-docker-and-heroku-registry
-    if: branch IN (staging, production)
-  - name: deploy
+  - name: build-and-deploy
     if: branch IN (staging, production)
 
 
 jobs:
   include:
   - stage: build-maven-project
+    language: java
     jdk:
       - openjdk8
     #before_script:
@@ -26,7 +23,7 @@ jobs:
   - stage: test
     script:
     - echo "run any test in staging stage if you need"
-  - stage: build-and-push-docker-and-heroku-registry
+  - stage: build-and-deploy
     before_script:
       - wget -qO- https://toolbelt.heroku.com/install.sh | sh
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -39,11 +36,10 @@ jobs:
     after_script:
       - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
       - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
-  - stage: deploy
-    script: heroku container:release web-$TRAVIS_BRANCH --app $HEROKU_APP_NAME-staging
-    on:
-      all_branches: true
-      condition: $TRAVIS_BRANCH =~ ^(staging|production)$
+      - heroku container:release web --app $HEROKU_APP_NAME-$TRAVIS_BRANCH
+      on:
+        all_branches: true
+        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
     #deploy:
     #  provider: heroku
     #  app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
