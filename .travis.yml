@@ -1,6 +1,7 @@
 services:
   - docker
 
+
 stages:
   - build-maven-project
   - test
