@@ -48,3 +48,6 @@ jobs:
       provider: heroku
       app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
       api_key: $HEROKU_AUTH_TOKEN
+      on:
+        all_branches: true
+        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
