@@ -1,7 +1,5 @@
 language: java
 
-jdk:
-  - openjdk8
 services:
   - docker
 
@@ -17,9 +15,11 @@ stages:
 jobs:
   include:
   - stage: build-maven-project
-    before_script:
-      - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
-      - docker pull openjdk:8-jdk-alpine
+    jdk:
+      - openjdk8
+    #before_script:
+    #  - echo "$DOCKER_PASSWORD" | docker login  -u "$DOCKER_USERNAME" --password-stdin
+    # - docker pull openjdk:8-jdk-alpine
     script:
     - chmod +x ./mvnw &&
       ./mvnw clean package
@@ -40,12 +40,15 @@ jobs:
       - docker push $DOCKER_USERNAME/hybrid_db:$TRAVIS_BRANCH
       - docker push registry.heroku.com/$HEROKU_APP_NAME/web-$TRAVIS_BRANCH
   - stage: deploy
-    #script: heroku container:release web --app $HEROKU_APP_NAME-staging
-    deploy:
-      provider: heroku
-      app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
-      api_key:
-        secure: $HEROKU_API_KEY
-      on:
-        all_branches: true
-        condition: $TRAVIS_BRANCH =~ ^(staging|production)$
+    script: heroku container:release web-$TRAVIS_BRANCH --app $HEROKU_APP_NAME-staging
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(staging|production)$
+    #deploy:
+    #  provider: heroku
+    #  app: $HEROKU_APP_NAME-$TRAVIS_BRANCH
+    #  api_key:
+    #    secure: $HEROKU_API_KEY
+    #  on:
+    #    all_branches: true
+    #    condition: $TRAVIS_BRANCH =~ ^(staging|production)$
