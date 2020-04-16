@@ -3,8 +3,8 @@ FROM tomcat:latest
 ARG WAR_FILE=target/*.war
 ADD ${WAR_FILE} /usr/local/tomcat/webapps/
 
-ENV PORT 8080
-EXPOSE $PORT
+#ENV PORT 8080
+#EXPOSE $PORT
 
 CMD ["catalina.sh", "run"]
 
