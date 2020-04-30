@@ -5,9 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.Dataset;
+import org.apache.spark.api.java.JavaRDD;
 
 @RestController
 public class TestController {
@@ -28,8 +26,8 @@ public class TestController {
     @GetMapping("/test5")
     public Test test5(@RequestParam(value = "name", defaultValue = "Earth") String name) {
         SparkTest ST = new SparkTest();
-        String ret = ST.ret;
-        return new Test(counter.incrementAndGet(), String.format(template, ret));
+        JavaRDD<String> c = ST.cnt();
+        return new Test(counter.incrementAndGet(), String.format(template, c));
     }
 
 
