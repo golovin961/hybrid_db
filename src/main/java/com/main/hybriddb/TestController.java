@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.apache.spark.api.java.JavaRDD;
 
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.Dataset;
+
 @RestController
 public class TestController {
 
@@ -14,43 +17,21 @@ public class TestController {
     private final AtomicLong counter = new AtomicLong();
 
     @GetMapping("/test")
-    public Test test(@RequestParam(value = "name", defaultValue = "World") String name) {
+    public Test test(@RequestParam(value = "name", defaultValue = "1World") String name) {
         return new Test(counter.incrementAndGet(), String.format(template, name));
     }
 
-    @GetMapping("/test2")
-    public Test test2(@RequestParam(value = "name", defaultValue = "Earth") String name) {
-        return new Test(counter.incrementAndGet(), String.format(template, name));
-    }
-
-    @GetMapping("/test5")
-    public Test test5(@RequestParam(value = "name", defaultValue = "Earth") String name) {
+    @GetMapping("/spark1")
+    public Test spark1(@RequestParam(value = "name", defaultValue = "Earth") String name) {
         SparkTest ST = new SparkTest();
-        JavaRDD<String> c = ST.cnt();
+        JavaRDD<String> c = ST.simple_test();
         return new Test(counter.incrementAndGet(), String.format(template, c));
     }
 
-
-//    @GetMapping("/test4")
-//    public Test test4(@RequestParam(value = "name", defaultValue = "Earth") String name) {
-//        String logFile = "exp.txt";
-//        SparkSession spark = SparkSession.builder().appName("Simple Application").getOrCreate();
-//        Dataset<String> logData = spark.read().textFile(logFile).cache();
-//        String ret = "123";
-//        //long n = logData.count();
-//        //String ret = "Lines in " +  logFile + " file: " + n; //n;// + ", lines with b: " + numBs;
-//        spark.stop();
-//        return new Test(counter.incrementAndGet(), String.format(template, ret));
-//    }
-
-//    @GetMapping("/test4")
-//    piblic String test4(){
-//        String logFile = "exp.txt";
-//        //SparkSession spark = SparkSession.builder().appName("Simple Application").getOrCreate();
-//        //Dataset<String> logData = spark.read().textFile(logFile).cache();
-//        //long n = logData.count();
-//        String ret = "Lines : " +logFile; //n;// + ", lines with b: " + numBs;
-//        //
-//        return ret;
-//    }
+    @GetMapping("/spark2")
+    public Test spark2(@RequestParam(value = "name", defaultValue = "Earth") String name) {
+        SparkTest ST = new SparkTest();
+        ST.sqltest();
+        return new Test(counter.incrementAndGet(), String.format(template, "E"));
+    }
 }
