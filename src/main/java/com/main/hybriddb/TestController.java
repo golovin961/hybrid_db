@@ -21,17 +21,17 @@ public class TestController {
         return new Test(counter.incrementAndGet(), String.format(template, name));
     }
 
-//    @GetMapping("/spark1") // 2.10/1.6.0
-//    public Test spark1(@RequestParam(value = "name", defaultValue = "Earth") String name) {
-//        SparkTest ST = new SparkTest();
-//        JavaRDD<String> c = ST.simple_test();
-//        return new Test(counter.incrementAndGet(), String.format(template, c));
-//    }
+    @GetMapping("/spark1")
+    public Test spark1(@RequestParam(value = "name", defaultValue = "Earth") String name) {
+        SparkTest ST = new SparkTest();
+        String c = ST.simple_test();
+        return new Test(counter.incrementAndGet(), String.format(template, c));
+    }
 
     @GetMapping("/spark2")
     public Test spark2(@RequestParam(value = "name", defaultValue = "Earth") String name) {
         SparkTest ST = new SparkTest();
-        ST.sqltest();
-        return new Test(counter.incrementAndGet(), String.format(template, "E"));
+        String s = ST.sql_test();
+        return new Test(counter.incrementAndGet(), String.format(template, s));
     }
 }
